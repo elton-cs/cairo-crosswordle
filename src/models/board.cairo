@@ -9,11 +9,25 @@ pub struct Letter {
     pub placed_by: ContractAddress,
 }
 
+#[derive(Copy, Drop, Serde, Debug, PartialEq, Introspect)]
+pub enum Status {
+    Hidden,
+    Solved,
+}
+
+impl StatusFelt252 of Into<Status, felt252> {
+    fn into(self: Status) -> felt252 {
+        match self {
+            Status::Hidden => 0,
+            Status::Solved => 1,
+        }
+    }
+}
+
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
-pub struct Word {
+pub struct Letter_Status {
     #[key]
-    pub player: ContractAddress,
-    // pub letter: (Letter, Letter, Letter, Letter, Letter),
-    pub word_hash: (felt252, felt252, felt252, felt252, felt252),
+    pub position: u8,
+    pub status: Status,
 }

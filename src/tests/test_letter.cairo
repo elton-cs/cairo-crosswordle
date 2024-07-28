@@ -4,12 +4,12 @@ mod tests {
     use dojo::utils::test::{spawn_test_world, deploy_contract};
     use dojo_starter::{
         systems::create::{create_actions, ICreateDispatcher, ICreateDispatcherTrait},
-        models::board::{Letter, letter},
+        models::board::{Letter, letter, Letter_Status, letter_status, Status},
     };
 
     fn setup() -> (IWorldDispatcher, ICreateDispatcher) {
         // world setup
-        let mut models = array![letter::TEST_CLASS_HASH];
+        let mut models = array![letter::TEST_CLASS_HASH, letter_status::TEST_CLASS_HASH];
         let world = spawn_test_world("dojo_starter", models);
         let contract_address = world
             .deploy_contract(
@@ -76,6 +76,30 @@ mod tests {
                 let position: u8 = index.try_into().unwrap();
                 let letter = get!(world, position, (Letter));
                 assert_eq!(letter.hash, word_span[index].clone());
+                index += 1;
+            }
+    }
+
+    #[test]
+    fn test_create_hidden_word() {
+        let (world, systems) = setup();
+
+        let single_word = ['N', 'I', 'N', 'J', 'A'];
+        systems.create_word(single_word);
+
+        // test
+        let mut index = 0;
+        let expected_status: felt252 = Status::Hidden.into();
+        let word_span = single_word.span();
+        while index < word_span
+            .len() {
+                let position: u8 = index.try_into().unwrap();
+                let (letter, letter_status) = get!(world, position, (Letter, Letter_Status));
+                // assert the letter retrieved from the world matches
+                assert_eq!(letter.hash, word_span[index].clone());
+                // assert that the status of each letter is Hidden
+                let curr_status: felt252 = letter_status.status.into();
+                assert_eq!(curr_status, expected_status);
                 index += 1;
             }
     }
