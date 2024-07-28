@@ -5,8 +5,8 @@ use starknet::ContractAddress;
 pub struct Letter {
     #[key]
     pub position: u8,
-    pub player: ContractAddress,
     pub hash: felt252,
+    pub placed_by: ContractAddress,
 }
 
 #[derive(Copy, Drop, Serde, Debug)]

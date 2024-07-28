@@ -34,7 +34,7 @@ mod tests {
         let single_letter = get!(world, 1, (Letter));
         assert!(single_letter.position == 1, "Letter is placed in wrong position");
         assert!(single_letter.hash == 'N'.into(), "Letter is incorrect");
-        assert!(single_letter.player == caller, "Wrong player");
+        assert!(single_letter.placed_by == caller, "Wrong player");
     }
 
     #[test]
@@ -56,8 +56,27 @@ mod tests {
             let position: u8 = index.try_into().unwrap();
             let single_letter = get!(world, position, (Letter));
             assert!(single_letter.hash == characters[index].clone(), "Letter is incorrect");
-            assert!(single_letter.player == caller, "Wrong player");
+            assert!(single_letter.placed_by == caller, "Wrong player");
             index += 1;
         };
+    }
+
+    #[test]
+    fn test_word() {
+        let (world, systems) = setup();
+
+        let single_word = ['N', 'I', 'N', 'J', 'A'];
+        systems.create_word(single_word);
+
+        // test
+        let mut index = 0;
+        let word_span = single_word.span();
+        while index < word_span
+            .len() {
+                let position: u8 = index.try_into().unwrap();
+                let letter = get!(world, position, (Letter));
+                assert_eq!(letter.hash, word_span[index].clone());
+                index += 1;
+            }
     }
 }
