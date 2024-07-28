@@ -13,7 +13,7 @@ mod create_actions {
     use super::ICreate;
     use super::NUM_LETTERS;
     use starknet::{ContractAddress, get_caller_address};
-    use dojo_starter::models::board::{Letter, Status, Letter_Status};
+    use dojo_starter::models::board::{Letter, Status, LetterStatus};
 
 
     #[abi(embed_v0)]
@@ -47,7 +47,7 @@ mod create_actions {
             while index < NUM_LETTERS {
                 let position = index.try_into().unwrap();
                 let single_letter = Letter { position, hash: word_span[index].clone(), placed_by };
-                let letter_status = Letter_Status { position, status: Status::Solved };
+                let letter_status = LetterStatus { position, status: Status::Solved };
                 set!(world, (single_letter, letter_status));
 
                 index += 1;

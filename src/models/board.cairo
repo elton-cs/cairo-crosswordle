@@ -26,7 +26,7 @@ impl StatusFelt252 of Into<Status, felt252> {
 
 #[derive(Copy, Drop, Serde, Debug)]
 #[dojo::model]
-pub struct Letter_Status {
+pub struct LetterStatus {
     #[key]
     pub position: u8,
     pub status: Status,

@@ -4,7 +4,7 @@ mod tests {
     use dojo::utils::test::{spawn_test_world, deploy_contract};
     use dojo_starter::{
         systems::create::{create_actions, ICreateDispatcher, ICreateDispatcherTrait},
-        models::board::{Letter, letter, Letter_Status, letter_status, Status},
+        models::board::{Letter, letter, LetterStatus, letter_status, Status},
     };
 
     fn setup() -> (IWorldDispatcher, ICreateDispatcher) {
@@ -94,7 +94,7 @@ mod tests {
         while index < word_span
             .len() {
                 let position: u8 = index.try_into().unwrap();
-                let (letter, letter_status) = get!(world, position, (Letter, Letter_Status));
+                let (letter, letter_status) = get!(world, position, (Letter, LetterStatus));
                 // assert the letter retrieved from the world matches
                 assert_eq!(letter.hash, word_span[index].clone());
                 // assert that the status of each letter is Hidden
