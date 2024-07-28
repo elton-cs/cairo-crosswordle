@@ -7,10 +7,7 @@ mod tests {
         models::board::{Letter, letter},
     };
 
-    #[test]
-    fn test_create_single_letter() {
-        let caller = starknet::contract_address_const::<0x0>();
-
+    fn setup() -> (IWorldDispatcher, ICreateDispatcher) {
         // world setup
         let mut models = array![letter::TEST_CLASS_HASH];
         let world = spawn_test_world("dojo_starter", models);
@@ -18,13 +15,49 @@ mod tests {
             .deploy_contract(
                 'salt', create_actions::TEST_CLASS_HASH.try_into().unwrap(), array![].span()
             );
-        let actions_system = ICreateDispatcher { contract_address };
+        let systems = ICreateDispatcher { contract_address };
 
-        // test function
-        actions_system.create_letter('N', 1);
-        let letter = get!(world, caller, (Letter));
-        println!("{:?}", letter);
-        assert!(letter.position == 1, "Letter is placed in wrong position");
-        assert!(letter.letter == 'N'.into(), "Letter is incorrect");
+        (world, systems)
+    }
+
+    #[test]
+    fn test_create_single_letter() {
+        let (world, systems) = setup();
+        let caller = starknet::contract_address_const::<0x0>();
+
+        // create single letter
+        let character = 'N';
+        let position = 1;
+        systems.create_letter(character, position);
+
+        // test
+        let single_letter = get!(world, 1, (Letter));
+        assert!(single_letter.position == 1, "Letter is placed in wrong position");
+        assert!(single_letter.hash == 'N'.into(), "Letter is incorrect");
+        assert!(single_letter.player == caller, "Wrong player");
+    }
+
+    #[test]
+    fn test_create_multiple_letters() {
+        let (world, systems) = setup();
+        let caller = starknet::contract_address_const::<0x0>();
+
+        // create multiple letters
+        let characters = ['N', 'I', 'N', 'J', 'A'].span();
+        let mut index = 0;
+        while (index < 5) {
+            systems.create_letter(characters[index].clone(), index.try_into().unwrap());
+            index += 1;
+        };
+
+        // test
+        index = 0;
+        while (index < 5) {
+            let position: u8 = index.try_into().unwrap();
+            let single_letter = get!(world, position, (Letter));
+            assert!(single_letter.hash == characters[index].clone(), "Letter is incorrect");
+            assert!(single_letter.player == caller, "Wrong player");
+            index += 1;
+        };
     }
 }

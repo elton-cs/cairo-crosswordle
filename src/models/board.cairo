@@ -4,9 +4,9 @@ use starknet::ContractAddress;
 #[dojo::model]
 pub struct Letter {
     #[key]
-    pub player: ContractAddress,
-    pub letter: felt252,
     pub position: u8,
+    pub player: ContractAddress,
+    pub hash: felt252,
 }
 
 #[derive(Copy, Drop, Serde, Debug)]

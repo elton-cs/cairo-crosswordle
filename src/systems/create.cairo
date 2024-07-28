@@ -15,9 +15,9 @@ mod create_actions {
     impl CreateImpl of ICreate<ContractState> {
         fn create_letter(ref world: IWorldDispatcher, letter: felt252, position: u8) {
             let player = get_caller_address();
-            let letter_component = Letter { player, letter, position };
+            let single_letter = Letter { position, player, hash: letter };
 
-            set!(world, (letter_component));
+            set!(world, (single_letter));
         }
     }
 }
