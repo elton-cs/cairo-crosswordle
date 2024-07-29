@@ -363,52 +363,30 @@
   },
   {
     "type": "impl",
-    "name": "movedImpl",
-    "interface_name": "dojo_starter::systems::actions::actions::Imoved"
-  },
-  {
-    "type": "enum",
-    "name": "dojo_starter::models::Direction",
-    "variants": [
-      {
-        "name": "None",
-        "type": "()"
-      },
-      {
-        "name": "Left",
-        "type": "()"
-      },
-      {
-        "name": "Right",
-        "type": "()"
-      },
-      {
-        "name": "Up",
-        "type": "()"
-      },
-      {
-        "name": "Down",
-        "type": "()"
-      }
-    ]
+    "name": "letterImpl",
+    "interface_name": "dojo_starter::models::board::Iletter"
   },
   {
     "type": "struct",
-    "name": "dojo_starter::systems::actions::actions::Moved",
+    "name": "dojo_starter::models::board::Letter",
     "members": [
       {
-        "name": "player",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "name": "position",
+        "type": "core::integer::u8"
       },
       {
-        "name": "direction",
-        "type": "dojo_starter::models::Direction"
+        "name": "hash",
+        "type": "core::felt252"
+      },
+      {
+        "name": "placed_by",
+        "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
   },
   {
     "type": "interface",
-    "name": "dojo_starter::systems::actions::actions::Imoved",
+    "name": "dojo_starter::models::board::Iletter",
     "items": [
       {
         "type": "function",
@@ -416,7 +394,7 @@
         "inputs": [
           {
             "name": "model",
-            "type": "dojo_starter::systems::actions::actions::Moved"
+            "type": "dojo_starter::models::board::Letter"
           }
         ],
         "outputs": [],
@@ -426,7 +404,7 @@
   },
   {
     "type": "event",
-    "name": "dojo_starter::systems::actions::actions::moved::Event",
+    "name": "dojo_starter::models::board::letter::Event",
     "kind": "enum",
     "variants": []
   }

@@ -128,53 +128,64 @@
   },
   {
     "type": "impl",
-    "name": "ActionsImpl",
-    "interface_name": "dojo_starter::systems::actions::IActions"
-  },
-  {
-    "type": "enum",
-    "name": "dojo_starter::models::Direction",
-    "variants": [
-      {
-        "name": "None",
-        "type": "()"
-      },
-      {
-        "name": "Left",
-        "type": "()"
-      },
-      {
-        "name": "Right",
-        "type": "()"
-      },
-      {
-        "name": "Up",
-        "type": "()"
-      },
-      {
-        "name": "Down",
-        "type": "()"
-      }
-    ]
+    "name": "CreateImpl",
+    "interface_name": "dojo_starter::systems::create::ICreate"
   },
   {
     "type": "interface",
-    "name": "dojo_starter::systems::actions::IActions",
+    "name": "dojo_starter::systems::create::ICreate",
     "items": [
       {
         "type": "function",
-        "name": "spawn",
-        "inputs": [],
+        "name": "create_letter",
+        "inputs": [
+          {
+            "name": "character",
+            "type": "core::felt252"
+          },
+          {
+            "name": "position",
+            "type": "core::integer::u8"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external"
       },
       {
         "type": "function",
-        "name": "move",
+        "name": "create_word",
         "inputs": [
           {
-            "name": "direction",
-            "type": "dojo_starter::models::Direction"
+            "name": "word",
+            "type": "[core::felt252; 5]"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "create_hidden_word",
+        "inputs": [
+          {
+            "name": "word",
+            "type": "[core::felt252; 5]"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "solve_letter",
+        "inputs": [
+          {
+            "name": "character",
+            "type": "core::felt252"
+          },
+          {
+            "name": "letter_location",
+            "type": "core::integer::u8"
           }
         ],
         "outputs": [],
@@ -185,11 +196,11 @@
   {
     "type": "impl",
     "name": "IDojoInitImpl",
-    "interface_name": "dojo_starter::systems::actions::actions::IDojoInit"
+    "interface_name": "dojo_starter::systems::create::create_actions::IDojoInit"
   },
   {
     "type": "interface",
-    "name": "dojo_starter::systems::actions::actions::IDojoInit",
+    "name": "dojo_starter::systems::create::create_actions::IDojoInit",
     "items": [
       {
         "type": "function",
@@ -249,7 +260,7 @@
   },
   {
     "type": "event",
-    "name": "dojo_starter::systems::actions::actions::Event",
+    "name": "dojo_starter::systems::create::create_actions::Event",
     "kind": "enum",
     "variants": [
       {
