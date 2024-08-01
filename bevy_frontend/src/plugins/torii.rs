@@ -61,6 +61,9 @@ enum MyNetUpdateMsg {
     // ...
 }
 
+#[derive(Component, Debug)]
+struct Counter(u64);
+
 /// Channels used for communicating with our game's netcode task.
 /// (The side used from our Bevy systems)
 #[derive(Resource)]
@@ -93,13 +96,20 @@ fn setup_net_session(mut commands: Commands) {
         tx_control,
         rx_updates,
     });
+
+    let counter = Counter(0);
+    commands.spawn(counter);
 }
 
-fn handle_net_updates(my_channels: Res<MyNetChannels>) {
+fn handle_net_updates(my_channels: Res<MyNetChannels>, mut query: Query<&mut Counter>) {
     // Non-blocking check for any new messages on the channel
     while let Ok(msg) = my_channels.rx_updates.try_recv() {
         // TODO: do something with `msg`
-        println!("{msg:?}");
+        // println!("{msg:?} with counter.");
+        for mut item in query.iter_mut() {
+            println!("{:?}", item.0);
+            item.0 += 1;
+        }
     }
 }
 

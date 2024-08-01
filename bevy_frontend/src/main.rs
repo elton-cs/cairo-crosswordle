@@ -1,12 +1,13 @@
 use bevy::prelude::*;
-use bevy_frontend::plugins::torii::ToriiPlugin;
+use bevy_frontend::plugins::{text::DisplayTextPlugin, torii::ToriiPlugin};
 
 fn main() {
     let mut app = App::new();
 
     app.add_plugins(DefaultPlugins);
-    app.add_systems(Startup, display_png);
+    // app.add_systems(Startup, display_png);
     app.add_plugins(ToriiPlugin);
+    app.add_plugins(DisplayTextPlugin);
     app.run();
 
     // let client = get_torii_client();
