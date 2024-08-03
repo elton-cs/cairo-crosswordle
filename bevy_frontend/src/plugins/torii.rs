@@ -9,8 +9,12 @@ impl Plugin for ToriiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_net_session).add_systems(
             FixedUpdate,
-            (tell_the_net_task_what_to_do, handle_net_updates),
+            (
+                tell_the_net_task_what_to_do,
+                (handle_net_updates, update_text).chain(),
+            ),
         );
+        app.add_systems(Startup, setup_text);
     }
 }
 
@@ -143,5 +147,39 @@ async fn my_netcode(rx_control: Receiver<MyNetControlMsg>, tx_updates: Sender<My
         //         // ... some other I/O work ...
         //     })
         //     .detach();
+    }
+}
+
+#[derive(Component, Debug)]
+struct AsyncText {
+    pub text: String,
+}
+
+fn setup_text(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let font = asset_server.load("fonts/FiraSans-Bold.ttf");
+    let text_style = TextStyle {
+        font: font.clone(),
+        font_size: 60.0,
+        ..default()
+    };
+    let text_justification = JustifyText::Center;
+    let text = 0.to_string();
+
+    commands.spawn(Camera2dBundle::default());
+    commands.spawn((
+        Text2dBundle {
+            text: Text::from_section(text.clone(), text_style.clone())
+                .with_justify(text_justification),
+            ..default()
+        },
+        AsyncText { text: text.clone() },
+    ));
+}
+
+fn update_text(mut query: Query<&mut Text>, mut counter_query: Query<&mut Counter>) {
+    let mut single_counter = counter_query.single_mut();
+
+    for mut text in &mut query {
+        text.sections[0].value = single_counter.0.to_string();
     }
 }

@@ -7,7 +7,7 @@ fn main() {
     app.add_plugins(DefaultPlugins);
     // app.add_systems(Startup, display_png);
     app.add_plugins(ToriiPlugin);
-    app.add_plugins(DisplayTextPlugin);
+    // app.add_plugins(DisplayTextPlugin);
     app.run();
 
     // let client = get_torii_client();
