@@ -1,185 +1,109 @@
-use async_channel::{Receiver, Sender};
-use bevy::{prelude::*, tasks::IoTaskPool};
+use std::{future::Future, sync::Arc};
+
+use async_channel::{unbounded, Receiver, Sender};
+use bevy::{
+    prelude::*,
+    tasks::{
+        futures_lite::{future, StreamExt},
+        AsyncComputeTaskPool, IoTaskPool,
+    },
+};
+use futures::lock::Mutex;
 use starknet_crypto::{poseidon_hash_many, Felt};
 use torii_client::client::Client;
-use torii_grpc::{client::EntityUpdateStreaming, types::EntityKeysClause};
+use torii_grpc::{
+    client::EntityUpdateStreaming,
+    types::{schema::Entity, EntityKeysClause, KeysClause},
+};
 
 pub struct ToriiPlugin;
 impl Plugin for ToriiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_net_session).add_systems(
-            FixedUpdate,
-            (
-                tell_the_net_task_what_to_do,
-                (handle_net_updates, update_text).chain(),
-            ),
-        );
-        app.add_systems(Startup, setup_text);
+        app.add_systems(Startup, setup_torii_client);
+        app.add_systems(Update, update_entities);
     }
 }
 
-async fn get_torii_client() -> Client {
+#[derive(Resource)]
+pub struct ToriiClient {
+    pub client_rx: Receiver<Client>,
+    pub entity_rx: Receiver<Entity>,
+}
+
+#[derive(Component)]
+pub struct BevyEntity {
+    pub dojo_entity: Entity,
+}
+
+fn setup_torii_client(mut commands: Commands) {
+    let pool = IoTaskPool::get();
+
     let torii_url = "http://0.0.0.0:8080".to_string();
     let rpc_url = "http://0.0.0.0:5050".to_string();
     let relay_url = "/ip4/127.0.0.1/tcp/9090".to_string();
     let world = Felt::from_hex_unchecked(
-        "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18",
+        "0x2f6f0512832a8820173edb8e1adac28b7edc78bb3b6f038614adf4377b694c5",
     );
 
-    let client: Client = Client::new(torii_url, rpc_url, relay_url, world)
-        .await
-        .unwrap();
-
-    client
-}
-
-async fn get_entities_stream(
-    client: &Client,
-    player_contract_address: Felt,
-) -> EntityUpdateStreaming {
-    // create hash of all models' keys (in this case, just one: the player's contract addresss)
-    let vec_keys = vec![player_contract_address.clone()];
-    let hashed_keys = poseidon_hash_many(&vec_keys);
-
-    // subscribe to updates on models with player's contract address as key
-    let entity_keys_clause = Some(EntityKeysClause::HashedKeys(vec![hashed_keys])).unwrap();
-    let stream = client
-        .on_entity_updated(vec![entity_keys_clause])
-        .await
-        .unwrap();
-
-    stream
-}
-
-/// Messages we send to our netcode task
-#[derive(Debug)]
-enum MyNetControlMsg {
-    DoSomething,
-    // ...
-}
-
-/// Messages we receive from our netcode task
-#[derive(Debug)]
-enum MyNetUpdateMsg {
-    SomethingHappened,
-    // ...
-}
-
-#[derive(Component, Debug)]
-struct Counter(u64);
-
-/// Channels used for communicating with our game's netcode task.
-/// (The side used from our Bevy systems)
-#[derive(Resource)]
-struct MyNetChannels {
-    tx_control: Sender<MyNetControlMsg>,
-    rx_updates: Receiver<MyNetUpdateMsg>,
-}
-
-fn setup_net_session(mut commands: Commands) {
-    // create our channels:
-    let (tx_control, rx_control) = async_channel::unbounded();
-    let (tx_updates, rx_updates) = async_channel::unbounded();
-
-    // spawn our background i/o task for networking
-    // and give it its side of the channels:
-    IoTaskPool::get()
-        .spawn(async move { my_netcode(rx_control, tx_updates).await })
-        .detach();
-
-    // NOTE: `.detach()` to let the task run
-    // without us storing the `Task` handle.
-    // Otherwise, the task will get canceled!
-
-    // (though in a real application, you probably want to
-    // store the `Task` handle and have a system to monitor
-    // your task and recreate it if necessary)
-
-    // put our side of the channels in a resource for later
-    commands.insert_resource(MyNetChannels {
-        tx_control,
-        rx_updates,
-    });
-
-    let counter = Counter(0);
-    commands.spawn(counter);
-}
-
-fn handle_net_updates(my_channels: Res<MyNetChannels>, mut query: Query<&mut Counter>) {
-    // Non-blocking check for any new messages on the channel
-    while let Ok(msg) = my_channels.rx_updates.try_recv() {
-        // TODO: do something with `msg`
-        // println!("{msg:?} with counter.");
-        for mut item in query.iter_mut() {
-            println!("{:?}", item.0);
-            item.0 += 1;
-        }
-    }
-}
-
-fn tell_the_net_task_what_to_do(my_channels: Res<MyNetChannels>) {
-    if let Err(e) = my_channels
-        .tx_control
-        .try_send(MyNetControlMsg::DoSomething)
-    {
-        // TODO: handle errors. Maybe our task has
-        // returned or panicked, and closed the channel?
-    }
-}
-
-/// This runs in the background I/O task
-async fn my_netcode(rx_control: Receiver<MyNetControlMsg>, tx_updates: Sender<MyNetUpdateMsg>) {
-    // TODO: Here we can connect and talk to our multiplayer server,
-    // handle incoming `MyNetControlMsg`s, send `MyNetUpdateMsg`s, etc.
-
-    while let Ok(msg) = rx_control.recv().await {
-        // TODO: do something with `msg`
-
-        // Send data back, to be handled from Bevy systems:
-        tx_updates
-            .send(MyNetUpdateMsg::SomethingHappened)
+    let (tx, rx) = unbounded();
+    let (client_tx, client_rx) = unbounded();
+    pool.spawn(async move {
+        info!("Setting up Torii client");
+        let client = Client::new(torii_url, rpc_url, relay_url, world)
             .await
-            .expect("Error sending updates over channel");
+            .unwrap();
+        let mut rcv = client
+            .on_entity_updated(vec![EntityKeysClause::Keys(KeysClause {
+                keys: vec![],
+                pattern_matching: torii_grpc::types::PatternMatching::VariableLen,
+                models: vec![],
+            })])
+            .await
+            .unwrap();
+        client_tx.send(client).await.unwrap();
 
-        // We can also spawn additional parallel tasks
-        // IoTaskPool::get()
-        //     .spawn(async move {
-        //         // ... some other I/O work ...
-        //     })
-        //     .detach();
-    }
+        info!("Torii client setup");
+        while let Some(Ok((_, entity))) = rcv.next().await {
+            info!("Received entity: {:?}", entity);
+            tx.send(entity).await.unwrap();
+        }
+    })
+    .detach();
+
+    info!("Torii client setup task spawned");
+
+    commands.insert_resource(ToriiClient {
+        client_rx: client_rx,
+        entity_rx: rx,
+    });
 }
 
-#[derive(Component, Debug)]
-struct AsyncText {
-    pub text: String,
-}
+fn update_entities(
+    mut commands: Commands,
+    client: Res<ToriiClient>,
+    mut query: Query<&mut BevyEntity>,
+) {
+    match client.entity_rx.try_recv() {
+        Ok(entity) => {
+            if let Some(mut bevy_entity) = query
+                .iter_mut()
+                .find(|e| e.dojo_entity.hashed_keys == entity.hashed_keys)
+            {
+                info!("Updating entity: {:?}", entity);
 
-fn setup_text(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let font = asset_server.load("fonts/FiraSans-Bold.ttf");
-    let text_style = TextStyle {
-        font: font.clone(),
-        font_size: 60.0,
-        ..default()
-    };
-    let text_justification = JustifyText::Center;
-    let text = 0.to_string();
+                bevy_entity.dojo_entity = entity;
+            } else {
+                info!("Spawning entity: {:?}", entity);
 
-    commands.spawn(Camera2dBundle::default());
-    commands.spawn((
-        Text2dBundle {
-            text: Text::from_section(text.clone(), text_style.clone())
-                .with_justify(text_justification),
-            ..default()
-        },
-        AsyncText { text: text.clone() },
-    ));
-}
-
-fn update_text(mut query: Query<&mut Text>, mut counter_query: Query<&mut Counter>) {
-    let mut single_counter = counter_query.single_mut();
-
-    for mut text in &mut query {
-        text.sections[0].value = single_counter.0.to_string();
+                commands.spawn(BevyEntity {
+                    dojo_entity: entity,
+                });
+            }
+        }
+        Err(err) => {
+            if err != async_channel::TryRecvError::Empty {
+                error!("Error receiving entity: {:?}", err);
+            }
+        }
     }
 }
