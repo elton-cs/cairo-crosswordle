@@ -4,5 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+async-channel = "2.3.1"
 bevy = "0.14.0"
-torii-client = { git = "https://github.com/dojoengine/dojo.git", tag = "v0.7.3" }
+starknet = "0.11.0"
+starknet-crypto = "0.7.0"
+starknet-types-core = "~0.1.4"
+torii-client = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.0.0-alpha.3" }
+torii-grpc = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.0.0-alpha.3" }
+
+[patch.crates-io]
+# Remove this patch once the following PR is merged: <https://github.com/xJonathanLEI/starknet-rs/pull/615>
+#
+# To enable std feature on `starknet-types-core`.
+# To re-export the entire `felt` module from `starknet-types-core`.
+starknet-core = { git = "https://github.com/kariy/starknet-rs", branch = "dojo-patch" }
+starknet-types-core = { git = "https://github.com/dojoengine/types-rs", rev = "289e2f0" }
