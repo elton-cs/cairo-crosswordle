@@ -1,15 +1,9 @@
-use std::{future::Future, sync::Arc};
-
-use async_channel::{unbounded, Receiver, Sender};
+use async_channel::{unbounded, Receiver};
 use bevy::{
     prelude::*,
-    tasks::{
-        futures_lite::{future, StreamExt},
-        AsyncComputeTaskPool, IoTaskPool,
-    },
+    tasks::{futures_lite::StreamExt, IoTaskPool},
 };
-use futures::lock::Mutex;
-use starknet_crypto::{poseidon_hash_many, Felt};
+use starknet_crypto::Felt;
 use torii_client::client::Client;
 use torii_grpc::{
     client::EntityUpdateStreaming,
@@ -28,6 +22,8 @@ impl Plugin for ToriiPlugin {
 pub struct ToriiClient {
     pub client_rx: Receiver<Client>,
     pub entity_rx: Receiver<Entity>,
+    #[cfg(not(target_arch = "wasm32"))]
+    pub runtime: tokio::runtime::Runtime,
 }
 
 #[derive(Component)]
@@ -36,17 +32,19 @@ pub struct BevyEntity {
 }
 
 fn setup_torii_client(mut commands: Commands) {
-    let pool = IoTaskPool::get();
-
     let torii_url = "http://0.0.0.0:8080".to_string();
     let rpc_url = "http://0.0.0.0:5050".to_string();
     let relay_url = "/ip4/127.0.0.1/tcp/9090".to_string();
     let world = Felt::from_hex_unchecked(
-        "0x2f6f0512832a8820173edb8e1adac28b7edc78bb3b6f038614adf4377b694c5",
+        "0x5d97c46d046f442f125b6cc83057e97ee6e848c4921126acd8ae9d17b55b369",
     );
-
     let (tx, rx) = unbounded();
     let (client_tx, client_rx) = unbounded();
+
+    #[cfg(target_arch = "wasm32")]
+    let pool = IoTaskPool::get();
+
+    #[cfg(target_arch = "wasm32")]
     pool.spawn(async move {
         info!("Setting up Torii client");
         let client = Client::new(torii_url, rpc_url, relay_url, world)
@@ -70,11 +68,39 @@ fn setup_torii_client(mut commands: Commands) {
     })
     .detach();
 
+    #[cfg(not(target_arch = "wasm32"))]
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+
+    #[cfg(not(target_arch = "wasm32"))]
+    runtime.spawn(async move {
+        info!("Setting up Torii client");
+        let client = Client::new(torii_url, rpc_url, relay_url, world)
+            .await
+            .unwrap();
+        let mut rcv: EntityUpdateStreaming = client
+            .on_entity_updated(vec![EntityKeysClause::Keys(KeysClause {
+                keys: vec![],
+                pattern_matching: torii_grpc::types::PatternMatching::VariableLen,
+                models: vec![],
+            })])
+            .await
+            .unwrap();
+        // client_tx.send(client).await.unwrap();
+
+        info!("Torii client setup");
+        while let Some(Ok((_, entity))) = rcv.next().await {
+            info!("Received entity: {:?}", entity);
+            tx.send(entity).await.unwrap();
+        }
+    });
+
     info!("Torii client setup task spawned");
 
     commands.insert_resource(ToriiClient {
         client_rx: client_rx,
         entity_rx: rx,
+        #[cfg(not(target_arch = "wasm32"))]
+        runtime: runtime,
     });
 }
 

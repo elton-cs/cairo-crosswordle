@@ -9,8 +9,9 @@ bevy = "0.14.0"
 starknet = "0.11.0"
 starknet-crypto = "0.7.0"
 starknet-types-core = "~0.1.4"
-torii-client = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.0.0-alpha.3" }
-torii-grpc = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.0.0-alpha.3" }
+tokio = "1.39.2"
+torii-client = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
+torii-grpc = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
 
 [patch.crates-io]
 # Remove this patch once the following PR is merged: <https://github.com/xJonathanLEI/starknet-rs/pull/615>

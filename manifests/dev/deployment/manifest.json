@@ -1,8 +1,8 @@
 {
   "world": {
     "kind": "WorldContract",
-    "class_hash": "0x32fb65ebfe6d91bb4b7ba0640650722c43ca0c917f5fc0f649ee2ecf720cde",
-    "original_class_hash": "0x32fb65ebfe6d91bb4b7ba0640650722c43ca0c917f5fc0f649ee2ecf720cde",
+    "class_hash": "0x14287624e97e0312d4e680e19071efce983810e909b32afc54cd9c8031f4c1c",
+    "original_class_hash": "0x14287624e97e0312d4e680e19071efce983810e909b32afc54cd9c8031f4c1c",
     "abi": [
       {
         "type": "impl",
@@ -400,12 +400,12 @@
             "name": "is_owner",
             "inputs": [
               {
-                "name": "address",
-                "type": "core::starknet::contract_address::ContractAddress"
-              },
-              {
                 "name": "resource",
                 "type": "core::felt252"
+              },
+              {
+                "name": "address",
+                "type": "core::starknet::contract_address::ContractAddress"
               }
             ],
             "outputs": [
@@ -420,12 +420,12 @@
             "name": "grant_owner",
             "inputs": [
               {
-                "name": "address",
-                "type": "core::starknet::contract_address::ContractAddress"
-              },
-              {
                 "name": "resource",
                 "type": "core::felt252"
+              },
+              {
+                "name": "address",
+                "type": "core::starknet::contract_address::ContractAddress"
               }
             ],
             "outputs": [],
@@ -436,12 +436,12 @@
             "name": "revoke_owner",
             "inputs": [
               {
-                "name": "address",
-                "type": "core::starknet::contract_address::ContractAddress"
-              },
-              {
                 "name": "resource",
                 "type": "core::felt252"
+              },
+              {
+                "name": "address",
+                "type": "core::starknet::contract_address::ContractAddress"
               }
             ],
             "outputs": [],
@@ -982,6 +982,33 @@
       },
       {
         "type": "event",
+        "name": "dojo::world::world_contract::world::StoreUpdateMember",
+        "kind": "struct",
+        "members": [
+          {
+            "name": "table",
+            "type": "core::felt252",
+            "kind": "data"
+          },
+          {
+            "name": "entity_id",
+            "type": "core::felt252",
+            "kind": "data"
+          },
+          {
+            "name": "member_selector",
+            "type": "core::felt252",
+            "kind": "data"
+          },
+          {
+            "name": "values",
+            "type": "core::array::Span::<core::felt252>",
+            "kind": "data"
+          }
+        ]
+      },
+      {
+        "type": "event",
         "name": "dojo::world::world_contract::world::StoreDelRecord",
         "kind": "struct",
         "members": [
@@ -1162,6 +1189,11 @@
             "kind": "nested"
           },
           {
+            "name": "StoreUpdateMember",
+            "type": "dojo::world::world_contract::world::StoreUpdateMember",
+            "kind": "nested"
+          },
+          {
             "name": "StoreDelRecord",
             "type": "dojo::world::world_contract::world::StoreDelRecord",
             "kind": "nested"
@@ -1189,8 +1221,8 @@
         ]
       }
     ],
-    "address": "0x70835f8344647b1e573fe7aeccbf044230089eb19624d3c7dea4080f5dcb025",
-    "transaction_hash": "0x51a2a73afb296548a8452242d4075fb51903b78b884ac97dc9d5ea573d0816b",
+    "address": "0x5d97c46d046f442f125b6cc83057e97ee6e848c4921126acd8ae9d17b55b369",
+    "transaction_hash": "0x2066dd883ff9a597788fabd6675fa41c5339fca654d15446417f2b80e784c4f",
     "block_number": 3,
     "seed": "dojo_starter",
     "metadata": {
@@ -1210,9 +1242,9 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x43d0c6f60ad9fb7a7d80e2e5e7202a5de3294b20bbf2d160278d39d2c702893",
-      "class_hash": "0x7cab497fa9fa0a182d665a486aa1e5c31f5458474b8a70d3378211b28b637e1",
-      "original_class_hash": "0x7cab497fa9fa0a182d665a486aa1e5c31f5458474b8a70d3378211b28b637e1",
+      "address": "0x777a026ec0451a9d02a41fdd7197b8fc5c1460b98592a867d1dd7a64e7bcae8",
+      "class_hash": "0x3b926f8bef1301019d879d4e3a46e855ca92abe9311b25dbdb0319eaf309cd2",
+      "original_class_hash": "0x3b926f8bef1301019d879d4e3a46e855ca92abe9311b25dbdb0319eaf309cd2",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
