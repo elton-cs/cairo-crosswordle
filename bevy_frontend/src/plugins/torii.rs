@@ -1,8 +1,7 @@
 use async_channel::{unbounded, Receiver};
-use bevy::{
-    prelude::*,
-    tasks::{futures_lite::StreamExt, IoTaskPool},
-};
+#[cfg(target_arch = "wasm32")]
+use bevy::tasks::IoTaskPool;
+use bevy::{prelude::*, tasks::futures_lite::StreamExt};
 use starknet_crypto::Felt;
 use torii_client::client::Client;
 use torii_grpc::{
@@ -20,7 +19,6 @@ impl Plugin for ToriiPlugin {
 
 #[derive(Resource)]
 pub struct ToriiClient {
-    pub client_rx: Receiver<Client>,
     pub entity_rx: Receiver<Entity>,
     #[cfg(not(target_arch = "wasm32"))]
     pub runtime: tokio::runtime::Runtime,
@@ -39,7 +37,6 @@ fn setup_torii_client(mut commands: Commands) {
         "0x5d97c46d046f442f125b6cc83057e97ee6e848c4921126acd8ae9d17b55b369",
     );
     let (tx, rx) = unbounded();
-    let (client_tx, client_rx) = unbounded();
 
     #[cfg(target_arch = "wasm32")]
     let pool = IoTaskPool::get();
@@ -58,7 +55,6 @@ fn setup_torii_client(mut commands: Commands) {
             })])
             .await
             .unwrap();
-        client_tx.send(client).await.unwrap();
 
         info!("Torii client setup");
         while let Some(Ok((_, entity))) = rcv.next().await {
@@ -85,7 +81,6 @@ fn setup_torii_client(mut commands: Commands) {
             })])
             .await
             .unwrap();
-        // client_tx.send(client).await.unwrap();
 
         info!("Torii client setup");
         while let Some(Ok((_, entity))) = rcv.next().await {
@@ -97,7 +92,6 @@ fn setup_torii_client(mut commands: Commands) {
     info!("Torii client setup task spawned");
 
     commands.insert_resource(ToriiClient {
-        client_rx: client_rx,
         entity_rx: rx,
         #[cfg(not(target_arch = "wasm32"))]
         runtime: runtime,
