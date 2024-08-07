@@ -58,7 +58,7 @@ fn setup_torii_client(mut commands: Commands) {
 
         info!("Torii client setup");
         while let Some(Ok((_, entity))) = rcv.next().await {
-            info!("Received entity: {:?}", entity);
+            info!("Received Dojo entity: {:?}", entity);
             tx.send(entity).await.unwrap();
         }
     })
@@ -84,7 +84,7 @@ fn setup_torii_client(mut commands: Commands) {
 
         info!("Torii client setup");
         while let Some(Ok((_, entity))) = rcv.next().await {
-            info!("Received entity: {:?}", entity);
+            info!("Received Dojo entity: {:?}", entity);
             tx.send(entity).await.unwrap();
         }
     });
@@ -113,7 +113,7 @@ fn update_entities(
 
                 bevy_entity.dojo_entity = entity;
             } else {
-                info!("Spawning entity: {:?}", entity);
+                info!("Spawning Bevy wrapped Dojo entity: {:?}", entity);
 
                 commands.spawn(BevyEntity {
                     dojo_entity: entity,

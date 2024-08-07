@@ -1,0 +1,75 @@
+2024-08-07T19: 51: 12.827221Z  INFO bevy_frontend: :plugins: :dojo_to_bevy: Building entity [Struct { name: "dojo_starter-LetterStatus", children: [Member { name: "position", ty: Primitive(U8(Some(0))), key: true
+            }, Member { name: "status", ty: Enum(Enum { name: "Status", option: Some(0), options: [EnumOption { name: "Hidden", ty: Tuple([])
+                        }, EnumOption { name: "Solved", ty: Tuple([])
+                        }
+                    ]
+                }), key: false
+            }
+        ]
+    }, Struct { name: "dojo_starter-Letter", children: [Member { name: "position", ty: Primitive(U8(Some(0))), key: true
+            }, Member { name: "hash", ty: Primitive(Felt252(Some(0x3d))), key: false
+            }, Member { name: "placed_by", ty: Primitive(ContractAddress(Some(0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca))), key: false
+            }
+        ]
+    }
+]
+2024-08-07T19: 51: 12.827293Z  INFO bevy_frontend: :plugins: :dojo_to_bevy: Building entity [Struct { name: "dojo_starter-LetterStatus", children: [Member { name: "position", ty: Primitive(U8(Some(1))), key: true
+            }, Member { name: "status", ty: Enum(Enum { name: "Status", option: Some(0), options: [EnumOption { name: "Hidden", ty: Tuple([])
+                        }, EnumOption { name: "Solved", ty: Tuple([])
+                        }
+                    ]
+                }), key: false
+            }
+        ]
+    }, Struct { name: "dojo_starter-Letter", children: [Member { name: "position", ty: Primitive(U8(Some(1))), key: true
+            }, Member { name: "hash", ty: Primitive(Felt252(Some(0x3e))), key: false
+            }, Member { name: "placed_by", ty: Primitive(ContractAddress(Some(0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca))), key: false
+            }
+        ]
+    }
+]
+2024-08-07T19: 51: 12.827355Z  INFO bevy_frontend: :plugins: :dojo_to_bevy: Building entity [Struct { name: "dojo_starter-LetterStatus", children: [Member { name: "position", ty: Primitive(U8(Some(2))), key: true
+            }, Member { name: "status", ty: Enum(Enum { name: "Status", option: Some(0), options: [EnumOption { name: "Hidden", ty: Tuple([])
+                        }, EnumOption { name: "Solved", ty: Tuple([])
+                        }
+                    ]
+                }), key: false
+            }
+        ]
+    }, Struct { name: "dojo_starter-Letter", children: [Member { name: "position", ty: Primitive(U8(Some(2))), key: true
+            }, Member { name: "hash", ty: Primitive(Felt252(Some(0x3f))), key: false
+            }, Member { name: "placed_by", ty: Primitive(ContractAddress(Some(0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca))), key: false
+            }
+        ]
+    }
+]
+2024-08-07T19: 51: 12.827445Z  INFO bevy_frontend: :plugins: :dojo_to_bevy: Building entity [Struct { name: "dojo_starter-LetterStatus", children: [Member { name: "position", ty: Primitive(U8(Some(3))), key: true
+            }, Member { name: "status", ty: Enum(Enum { name: "Status", option: Some(0), options: [EnumOption { name: "Hidden", ty: Tuple([])
+                        }, EnumOption { name: "Solved", ty: Tuple([])
+                        }
+                    ]
+                }), key: false
+            }
+        ]
+    }, Struct { name: "dojo_starter-Letter", children: [Member { name: "position", ty: Primitive(U8(Some(3))), key: true
+            }, Member { name: "hash", ty: Primitive(Felt252(Some(0x40))), key: false
+            }, Member { name: "placed_by", ty: Primitive(ContractAddress(Some(0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca))), key: false
+            }
+        ]
+    }
+]
+2024-08-07T19: 51: 12.827484Z  INFO bevy_frontend: :plugins: :dojo_to_bevy: Building entity [Struct { name: "dojo_starter-LetterStatus", children: [Member { name: "position", ty: Primitive(U8(Some(4))), key: true
+            }, Member { name: "status", ty: Enum(Enum { name: "Status", option: Some(0), options: [EnumOption { name: "Hidden", ty: Tuple([])
+                        }, EnumOption { name: "Solved", ty: Tuple([])
+                        }
+                    ]
+                }), key: false
+            }
+        ]
+    }, Struct { name: "dojo_starter-Letter", children: [Member { name: "position", ty: Primitive(U8(Some(4))), key: true
+            }, Member { name: "hash", ty: Primitive(Felt252(Some(0x41))), key: false
+            }, Member { name: "placed_by", ty: Primitive(ContractAddress(Some(0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca))), key: false
+            }
+        ]
+    }
+]
