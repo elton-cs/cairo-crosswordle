@@ -10,6 +10,9 @@ sierra-replace-ids = true
 migrate = "sozo build && sozo migrate apply"
 spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
+ninja = "sozo execute create_actions create_hidden_word -c sstr:N,sstr:I,sstr:N,sstr:J,sstr:A"
+abcde = "sozo execute create_actions create_hidden_word -c sstr:A,sstr:B,sstr:C,sstr:D,sstr:E"
+
 
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }

@@ -10,7 +10,7 @@ fn main() {
     app.add_systems(Startup, default_camera);
 
     app.add_plugins(ToriiPlugin);
-    app.add_plugins(DisplayPlugin);
+    // app.add_plugins(DisplayPlugin);
     app.add_plugins(DojoToBevy);
 
     app.run();
