@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_frontend::plugins::{
-    display::DisplayPlugin, dojo_to_bevy::DojoToBevy, torii::ToriiPlugin,
+    display::DisplayPlugin,
+    // dojo_to_bevy::DojoToBevy,
+    // torii::ToriiPlugin,
 };
 
 fn main() {
@@ -8,10 +10,10 @@ fn main() {
 
     app.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
     app.add_systems(Startup, default_camera);
+    app.add_plugins(DisplayPlugin);
 
-    app.add_plugins(ToriiPlugin);
-    // app.add_plugins(DisplayPlugin);
-    app.add_plugins(DojoToBevy);
+    // app.add_plugins(ToriiPlugin);
+    // app.add_plugins(DojoToBevy);
 
     app.run();
 }
