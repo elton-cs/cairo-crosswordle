@@ -5,8 +5,9 @@ use starknet::core::types::Felt;
 #[derive(Debug, Component)]
 pub struct Letter {
     pub position: u8,
-    pub hash: Felt,
-    pub placed_by: ContractAddress,
+    pub mock_hash: char,
+    // pub hash: Felt,
+    // pub placed_by: ContractAddress,
 }
 
 #[derive(Debug, Component)]
