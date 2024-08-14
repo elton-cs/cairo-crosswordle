@@ -10,6 +10,7 @@ fn main() {
 
     app.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
     app.add_systems(Startup, default_camera);
+
     app.add_plugins(DisplayPlugin);
 
     // app.add_plugins(ToriiPlugin);
