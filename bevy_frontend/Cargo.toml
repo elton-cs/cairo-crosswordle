@@ -8,6 +8,7 @@ bevy = "0.14.1"
 dojo-types = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
 starknet = "0.11.0"
 cainome = { git = "https://github.com/cartridge-gg/cainome", rev = "7b0c2b369063fc1a34152ec999028a7e9dd093a3" }
+rand = "0.8.5"
 
 # async-channel = "2.3.1"
 # starknet-crypto = "0.7.0"

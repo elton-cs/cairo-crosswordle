@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::Rng;
 
 use super::manual_bindgen::{Letter, LetterStatus, Status};
 
@@ -17,9 +18,18 @@ struct TempDojoEntity {
 }
 
 fn mock_word_entities(mut commands: Commands) {
-    let word = ['s', 'a', 'u', 'c', 'e'];
+    let random_5_letter_words = [
+        "apple", "beach", "candy", "dough", "eagle", "fairy", "giant", "happy", "igloo", "jelly",
+        "kitty", "lucky", "mango", "noble", "olive", "panda", "queen", "robin", "sunny", "tiger",
+        "umbra", "vivid", "wacky", "xenon", "yacht", "zebra",
+    ];
 
-    for (index, letter) in word.iter().enumerate() {
+    // random number between 0 and 25:
+    let random_index = rand::thread_rng().gen_range(0..26);
+
+    let word = random_5_letter_words[random_index];
+
+    for (index, letter) in word.chars().enumerate() {
         let letter = Letter {
             position: index as u8,
             mock_hash: letter.clone(),
