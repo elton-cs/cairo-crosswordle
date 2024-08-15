@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_frontend::plugins::{
     image_visualize::VisualizeImagePlugin,
     mock_torii::ToriiPlugin,
+    switch_letter_status::FlipLetterStatusPlugin,
     // display::DisplayPlugin,
     // dojo_to_bevy::DojoToBevy,
     // torii::ToriiPlugin,
@@ -16,6 +17,7 @@ fn main() {
     app.add_systems(Update, display_entity_count);
     app.add_plugins(ToriiPlugin);
     app.add_plugins(VisualizeImagePlugin);
+    app.add_plugins(FlipLetterStatusPlugin);
     // app.add_plugins(VisualizeTextPlugin);
     // app.add_plugins(DisplayPlugin);
     // app.add_plugins(ToriiPlugin);
