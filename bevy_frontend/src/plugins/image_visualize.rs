@@ -18,10 +18,7 @@ impl Plugin for VisualizeImagePlugin {
 }
 
 #[derive(Debug, Component)]
-struct ImageVisual {
-    hidden: usize,
-    solved: usize,
-}
+struct ImageVisual;
 
 #[derive(Debug, Resource)]
 struct KeysTextureAtlas {
@@ -110,10 +107,7 @@ fn spawn_default_sprite(
         commands.spawn((keys_sprite, hidden_texture, parent_entity.clone(), KeyLayer));
         commands.spawn((letters_sprite, solved_texture, parent_entity, LetterLayer));
 
-        commands.entity(entity_id).insert((ImageVisual {
-            hidden: HIDDEN_INDEX,
-            solved: letter_index,
-        },));
+        commands.entity(entity_id).insert(ImageVisual);
     }
 }
 

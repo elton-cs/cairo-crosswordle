@@ -1,4 +1,5 @@
 pub mod display;
+pub mod highlight_start;
 pub mod image_visualize;
 pub mod manual_bindgen;
 pub mod mock_torii;
