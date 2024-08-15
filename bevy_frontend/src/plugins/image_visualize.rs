@@ -1,9 +1,8 @@
-use super::manual_bindgen::{Letter, LetterStatus, Status};
-use bevy::{input::keyboard::Key, prelude::*, utils::HashMap};
-
-const MULTIPLIER: f32 = 20.;
-const SCALE: Vec3 = Vec3::splat(1.3);
-const HIDDEN_INDEX: usize = 0;
+use super::{
+    constants::{HIDDEN_INDEX, MULTIPLIER, SCALE},
+    manual_bindgen::{Letter, LetterStatus, Status},
+};
+use bevy::{prelude::*, utils::HashMap};
 
 pub struct VisualizeImagePlugin;
 impl Plugin for VisualizeImagePlugin {

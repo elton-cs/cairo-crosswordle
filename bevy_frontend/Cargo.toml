@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.14.1"
+bevy = { version = "0.14.1", features = ["dynamic_linking"] }
 dojo-types = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
 starknet = "0.11.0"
 cainome = { git = "https://github.com/cartridge-gg/cainome", rev = "7b0c2b369063fc1a34152ec999028a7e9dd093a3" }
@@ -20,3 +20,11 @@ rand = "0.8.5"
 [patch.crates-io]
 starknet-core = { git = "https://github.com/kariy/starknet-rs", branch = "dojo-patch" }
 # starknet-types-core = { git = "https://github.com/dojoengine/types-rs", rev = "289e2f0" }
+
+# Enable a small amount of optimization in the dev profile.
+[profile.dev]
+opt-level = 1
+
+# Enable a large amount of optimization in the dev profile for dependencies.
+[profile.dev.package."*"]
+opt-level = 3
