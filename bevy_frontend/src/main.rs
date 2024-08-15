@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 use bevy_frontend::plugins::{
+    image_visualize::VisualizeImagePlugin,
+    mock_torii::ToriiPlugin,
     // display::DisplayPlugin,
     // dojo_to_bevy::DojoToBevy,
     // torii::ToriiPlugin,
-    mock_torii::ToriiPlugin,
-    visualize::VisualizePlugin,
+    // text_visualize::VisualizeTextPlugin,
 };
 
 fn main() {
@@ -14,7 +15,8 @@ fn main() {
     app.add_systems(Startup, default_camera);
     app.add_systems(Update, display_entity_count);
     app.add_plugins(ToriiPlugin);
-    app.add_plugins(VisualizePlugin);
+    app.add_plugins(VisualizeImagePlugin);
+    // app.add_plugins(VisualizeTextPlugin);
     // app.add_plugins(DisplayPlugin);
     // app.add_plugins(ToriiPlugin);
     // app.add_plugins(DojoToBevy);
