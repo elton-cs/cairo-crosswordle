@@ -1,21 +1,28 @@
-use super::manual_bindgen::{Letter, LetterStatus};
+use super::manual_bindgen::{Letter, LetterStatus, Status};
 use bevy::{prelude::*, utils::HashMap};
 
 const MULTIPLIER: f32 = 20.;
 const SCALE: Vec3 = Vec3::splat(1.3);
+const HIDDEN_INDEX: usize = 39;
 
 pub struct VisualizeImagePlugin;
 impl Plugin for VisualizeImagePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, build_letter_to_image_map);
-        app.add_systems(Update, (add_image_visualizer).chain());
+        app.add_systems(
+            Update,
+            (spawn_sprite_options, update_letter_visability).chain(),
+        );
     }
 }
 
 #[derive(Debug, Component)]
-struct ImageVisual;
+struct ImageVisual {
+    hidden: usize,
+    solved: usize,
+}
 
-fn add_image_visualizer(
+fn spawn_sprite_options(
     mut commands: Commands,
     query: Query<(Entity, &Letter, &LetterStatus), Without<ImageVisual>>,
     asset_server: Res<AssetServer>,
@@ -28,8 +35,6 @@ fn add_image_visualizer(
 
     for (entity_id, letter, _letter_status) in query.iter() {
         let letter_value = letter.mock_hash.clone().to_string();
-        let letter_index = letter_map.map.get(letter_value.as_str()).unwrap().clone() as usize;
-
         let sprite = SpriteBundle {
             transform: Transform::from_translation(Vec3::new(
                 ((letter.position) as f32) * MULTIPLIER,
@@ -40,14 +45,33 @@ fn add_image_visualizer(
             texture: texture.clone(),
             ..default()
         };
-        let texture_atlas = TextureAtlas {
+
+        let letter_index = letter_map.map.get(letter_value.as_str()).unwrap().clone() as usize;
+        let hidden_texture = TextureAtlas {
             layout: texture_atlas_layout.clone(),
-            index: letter_index,
+            index: HIDDEN_INDEX,
         };
 
-        commands
-            .entity(entity_id)
-            .insert((sprite, texture_atlas, ImageVisual));
+        // commands
+        //     .entity(entity_id)
+        //     .insert((sprite, texture_atlas, ImageVisual));
+        commands.entity(entity_id).insert((
+            sprite,
+            hidden_texture.clone(),
+            ImageVisual {
+                hidden: HIDDEN_INDEX,
+                solved: letter_index,
+            },
+        ));
+    }
+}
+
+fn update_letter_visability(mut query: Query<(&LetterStatus, &mut TextureAtlas, &ImageVisual)>) {
+    for (letter_status, mut texture, new_visual) in query.iter_mut() {
+        match letter_status.status {
+            Status::Solved => texture.index = new_visual.solved,
+            Status::Hidden => texture.index = new_visual.hidden,
+        };
     }
 }
 
