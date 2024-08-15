@@ -1,13 +1,7 @@
 use bevy::prelude::*;
 use bevy_frontend::plugins::{
-    cursor::CursorPlugin,
-    // display::DisplayPlugin,
-    // dojo_to_bevy::DojoToBevy,
-    // torii::ToriiPlugin,
-    // text_visualize::VisualizeTextPlugin,
-    image_visualize::VisualizeImagePlugin,
-    mock_torii::ToriiPlugin,
-    switch_letter_status::FlipLetterStatusPlugin,
+    cursor::CursorPlugin, guess_letter::GuessLetterPlugin, image_visualize::VisualizeImagePlugin,
+    mock_torii::ToriiPlugin, switch_letter_status::FlipLetterStatusPlugin,
 };
 
 fn main() {
@@ -20,6 +14,7 @@ fn main() {
     app.add_plugins(VisualizeImagePlugin);
     app.add_plugins(FlipLetterStatusPlugin);
     app.add_plugins(CursorPlugin);
+    app.add_plugins(GuessLetterPlugin);
     // app.add_plugins(VisualizeTextPlugin);
     // app.add_plugins(DisplayPlugin);
     // app.add_plugins(ToriiPlugin);

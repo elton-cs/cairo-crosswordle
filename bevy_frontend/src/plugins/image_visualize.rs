@@ -134,8 +134,8 @@ fn update_letter_visibility(
 }
 
 #[derive(Debug, Resource)]
-struct LetterMap {
-    map: HashMap<&'static str, u8>,
+pub struct LetterMap {
+    pub map: HashMap<&'static str, u8>,
 }
 
 fn build_letter_to_image_map(mut commands: Commands) {
