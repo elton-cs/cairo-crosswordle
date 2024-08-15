@@ -17,7 +17,7 @@ struct TempDojoEntity {
 }
 
 fn mock_word_entities(mut commands: Commands) {
-    let word = ['N', 'I', 'N', 'J', 'A'];
+    let word = ['s', 'a', 'u', 'c', 'e'];
 
     for (index, letter) in word.iter().enumerate() {
         let letter = Letter {
