@@ -1,5 +1,5 @@
 use super::manual_bindgen::{Letter, LetterStatus, Status};
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{input::keyboard::Key, prelude::*, utils::HashMap};
 
 const MULTIPLIER: f32 = 20.;
 const SCALE: Vec3 = Vec3::splat(1.3);
@@ -12,11 +12,7 @@ impl Plugin for VisualizeImagePlugin {
         app.add_systems(Startup, create_texture_atlas);
         app.add_systems(
             Update,
-            (
-                spawn_default_sprite,
-                // update_letter_visability
-            )
-                .chain(),
+            (spawn_default_sprite, update_letter_visibility).chain(),
         );
     }
 }
@@ -39,17 +35,14 @@ struct LetterTextureAtlas {
     layout: Handle<TextureAtlasLayout>,
 }
 
-// #[derive(Debug, Component)]
-// struct KeyImage {
-//     sprite: Sprite,
-//     texture_atlas: TextureAtlas,
-// }
+#[derive(Debug, Component, Clone)]
+struct ParentEntity(Entity);
 
-// #[derive(Debug, Component)]
-// struct LettersImage {
-//     sprite: Sprite,
-//     texture_atlas: TextureAtlas,
-// }
+#[derive(Debug, Component)]
+struct KeyLayer;
+
+#[derive(Debug, Component)]
+struct LetterLayer;
 
 fn create_texture_atlas(
     asset_server: Res<AssetServer>,
@@ -99,7 +92,7 @@ fn spawn_default_sprite(
             transform: Transform::from_translation(Vec3::new(
                 ((letter.position) as f32) * MULTIPLIER,
                 ((0) as f32) * MULTIPLIER,
-                2.,
+                0.,
             ))
             .with_scale(SCALE),
             texture: letters_img.texture.clone(),
@@ -112,8 +105,10 @@ fn spawn_default_sprite(
             index: letter_index,
         };
 
-        commands.spawn((keys_sprite, hidden_texture));
-        commands.spawn((letters_sprite, solved_texture));
+        let parent_entity = ParentEntity(entity_id);
+
+        commands.spawn((keys_sprite, hidden_texture, parent_entity.clone(), KeyLayer));
+        commands.spawn((letters_sprite, solved_texture, parent_entity, LetterLayer));
 
         commands.entity(entity_id).insert((ImageVisual {
             hidden: HIDDEN_INDEX,
@@ -122,12 +117,20 @@ fn spawn_default_sprite(
     }
 }
 
-fn update_letter_visability(mut query: Query<(&LetterStatus, &mut TextureAtlas, &ImageVisual)>) {
-    for (letter_status, mut texture, new_visual) in query.iter_mut() {
-        match letter_status.status {
-            Status::Solved => texture.index = new_visual.solved,
-            Status::Hidden => texture.index = new_visual.hidden,
-        };
+fn update_letter_visibility(
+    query: Query<(Entity, &LetterStatus), With<ImageVisual>>,
+    mut image_query: Query<(&mut Transform, &ParentEntity), With<LetterLayer>>,
+) {
+    for (mut transform, parent_entity) in image_query.iter_mut() {
+        let parent_entity = parent_entity.0;
+        for (entity_id, letter_status) in query.iter() {
+            if parent_entity == entity_id {
+                match letter_status.status {
+                    Status::Solved => transform.translation.z = 2.,
+                    Status::Hidden => transform.translation.z = 0.,
+                };
+            }
+        }
     }
 }
 
