@@ -3,15 +3,20 @@ use bevy::{prelude::*, utils::HashMap};
 
 const MULTIPLIER: f32 = 20.;
 const SCALE: Vec3 = Vec3::splat(1.3);
-const HIDDEN_INDEX: usize = 39;
+const HIDDEN_INDEX: usize = 0;
 
 pub struct VisualizeImagePlugin;
 impl Plugin for VisualizeImagePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, build_letter_to_image_map);
+        app.add_systems(Startup, create_texture_atlas);
         app.add_systems(
             Update,
-            (spawn_sprite_options, update_letter_visability).chain(),
+            (
+                spawn_default_sprite,
+                // update_letter_visability
+            )
+                .chain(),
         );
     }
 }
@@ -22,47 +27,98 @@ struct ImageVisual {
     solved: usize,
 }
 
-fn spawn_sprite_options(
-    mut commands: Commands,
-    query: Query<(Entity, &Letter, &LetterStatus), Without<ImageVisual>>,
+#[derive(Debug, Resource)]
+struct KeysTextureAtlas {
+    texture: Handle<Image>,
+    layout: Handle<TextureAtlasLayout>,
+}
+
+#[derive(Debug, Resource)]
+struct LetterTextureAtlas {
+    texture: Handle<Image>,
+    layout: Handle<TextureAtlasLayout>,
+}
+
+// #[derive(Debug, Component)]
+// struct KeyImage {
+//     sprite: Sprite,
+//     texture_atlas: TextureAtlas,
+// }
+
+// #[derive(Debug, Component)]
+// struct LettersImage {
+//     sprite: Sprite,
+//     texture_atlas: TextureAtlas,
+// }
+
+fn create_texture_atlas(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    letter_map: Res<LetterMap>,
+    mut commands: Commands,
 ) {
-    let texture: Handle<Image> = asset_server.load("keys.png");
-    let layout = TextureAtlasLayout::from_grid(UVec2::new(15, 16), 5, 8, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let keys_texture: Handle<Image> = asset_server.load("new_keys.png");
+    let keys_layout = TextureAtlasLayout::from_grid(UVec2::new(15, 16), 6, 2, None, None);
+    commands.insert_resource(KeysTextureAtlas {
+        texture: keys_texture,
+        layout: texture_atlas_layouts.add(keys_layout),
+    });
 
+    let letter_texture: Handle<Image> = asset_server.load("letters_only.png");
+    let letter_layout = TextureAtlasLayout::from_grid(UVec2::new(15, 16), 5, 8, None, None);
+    commands.insert_resource(LetterTextureAtlas {
+        texture: letter_texture,
+        layout: texture_atlas_layouts.add(letter_layout),
+    });
+}
+
+fn spawn_default_sprite(
+    mut commands: Commands,
+    query: Query<(Entity, &Letter, &LetterStatus), Without<ImageVisual>>,
+    letter_map: Res<LetterMap>,
+    keys_img: Res<KeysTextureAtlas>,
+    letters_img: Res<LetterTextureAtlas>,
+) {
     for (entity_id, letter, _letter_status) in query.iter() {
         let letter_value = letter.mock_hash.clone().to_string();
-        let sprite = SpriteBundle {
+        let keys_sprite = SpriteBundle {
             transform: Transform::from_translation(Vec3::new(
                 ((letter.position) as f32) * MULTIPLIER,
                 ((0) as f32) * MULTIPLIER,
                 1.,
             ))
             .with_scale(SCALE),
-            texture: texture.clone(),
+            texture: keys_img.texture.clone(),
             ..default()
         };
-
-        let letter_index = letter_map.map.get(letter_value.as_str()).unwrap().clone() as usize;
         let hidden_texture = TextureAtlas {
-            layout: texture_atlas_layout.clone(),
+            layout: keys_img.layout.clone(),
             index: HIDDEN_INDEX,
         };
 
-        // commands
-        //     .entity(entity_id)
-        //     .insert((sprite, texture_atlas, ImageVisual));
-        commands.entity(entity_id).insert((
-            sprite,
-            hidden_texture.clone(),
-            ImageVisual {
-                hidden: HIDDEN_INDEX,
-                solved: letter_index,
-            },
-        ));
+        let letters_sprite = SpriteBundle {
+            transform: Transform::from_translation(Vec3::new(
+                ((letter.position) as f32) * MULTIPLIER,
+                ((0) as f32) * MULTIPLIER,
+                2.,
+            ))
+            .with_scale(SCALE),
+            texture: letters_img.texture.clone(),
+            ..default()
+        };
+        let letter_index = letter_map.map.get(letter_value.as_str()).unwrap().clone() as usize;
+
+        let solved_texture = TextureAtlas {
+            layout: letters_img.layout.clone(),
+            index: letter_index,
+        };
+
+        commands.spawn((keys_sprite, hidden_texture));
+        commands.spawn((letters_sprite, solved_texture));
+
+        commands.entity(entity_id).insert((ImageVisual {
+            hidden: HIDDEN_INDEX,
+            solved: letter_index,
+        },));
     }
 }
 
