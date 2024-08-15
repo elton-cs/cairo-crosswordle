@@ -1,8 +1,5 @@
 use super::manual_bindgen::{LetterStatus, Status};
-use bevy::{
-    input::common_conditions::{input_just_pressed, input_pressed},
-    prelude::*,
-};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 pub struct FlipLetterStatusPlugin;
 impl Plugin for FlipLetterStatusPlugin {
