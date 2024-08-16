@@ -1,3 +1,5 @@
+use std::char;
+
 use crate::plugins::constants::{MULTIPLIER, SCALE};
 
 use super::image_visualize::LetterMap;
@@ -66,11 +68,21 @@ fn input_letter_guess(
         }
         match &ev.logical_key {
             Key::Character(c) => {
-                println!("Typed: {}", c);
-                if letter.letter.len() < 5 {
-                    letter.letter.push(c.to_string());
+                let A: u32 = 'A'.into();
+                let Z: u32 = 'Z'.into();
+                let a: u32 = 'a'.into();
+                let z: u32 = 'z'.into();
+                let char_code: u32 = c.chars().next().unwrap().into();
+
+                if (char_code >= a && char_code <= z) || (char_code >= A && char_code <= Z) {
+                    println!("Typed: {}", c);
+                    if letter.letter.len() < 5 {
+                        letter.letter.push(c.to_lowercase().to_string());
+                    } else {
+                        println!("Already typed 5 letters!");
+                    }
                 } else {
-                    println!("Already typed 5 letters!");
+                    println!("Invalid character: {}", c);
                 }
             }
             Key::Backspace => {
@@ -91,7 +103,7 @@ fn display_guess(
     mut commands: Commands,
 ) {
     let mut letter = letter_guess_query.get_single_mut().unwrap();
-    info!("Guess: {:?}", letter.letter);
+    // info!("Guess: {:?}", letter.letter);
 
     let number_of_letters = letter.letter.len();
 

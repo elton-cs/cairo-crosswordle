@@ -9,7 +9,7 @@ fn main() {
 
     app.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
     app.add_systems(Startup, default_camera);
-    app.add_systems(Update, display_entity_count);
+    // app.add_systems(Update, display_entity_count);
     app.add_plugins(ToriiPlugin);
     app.add_plugins(VisualizeImagePlugin);
     app.add_plugins(FlipLetterStatusPlugin);
