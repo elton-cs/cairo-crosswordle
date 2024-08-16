@@ -24,7 +24,6 @@ impl Plugin for GuessLetterPlugin {
 #[derive(Debug, Component)]
 pub struct LetterGuess {
     pub letter: Vec<String>,
-    pub previous_index: i8,
     pub spawned_images: Vec<Entity>,
 }
 
@@ -44,7 +43,6 @@ fn init_empty_letter_guess(
 ) {
     commands.spawn(LetterGuess {
         letter: vec![],
-        previous_index: -1,
         spawned_images: vec![],
     });
 
