@@ -14,6 +14,7 @@ impl Plugin for SolutionVerifierPlugin {
             PostUpdate,
             verify_solution.run_if(input_just_pressed(KeyCode::Enter)),
         );
+        app.add_systems(PostUpdate, update_progress.after(verify_solution));
     }
 }
 
@@ -21,12 +22,26 @@ impl Plugin for SolutionVerifierPlugin {
 struct SolutionVerifier {
     solution: HashMap<u8, char>,
     guess: HashMap<u8, char>,
+    progress: HashMap<u8, LetterGuessStatus>,
+}
+
+#[derive(Debug)]
+enum LetterGuessStatus {
+    NotInWord,
+    NotInCorrectLocation,
+    ExactMatch,
 }
 
 fn init_solution_verifier(mut commands: Commands) {
     let solution = HashMap::default();
     let guess = HashMap::default();
-    let solution_verifier = SolutionVerifier { solution, guess };
+    let progress: HashMap<u8, LetterGuessStatus> = HashMap::default();
+
+    let solution_verifier = SolutionVerifier {
+        solution,
+        guess,
+        progress,
+    };
     commands.insert_resource(solution_verifier);
 }
 
@@ -56,17 +71,41 @@ fn save_completed_guess(
     verifier.guess = guess;
 }
 
-fn verify_solution(verifier: Res<SolutionVerifier>) {
+fn verify_solution(mut verifier: ResMut<SolutionVerifier>) {
+    let mut progress: HashMap<u8, LetterGuessStatus> = HashMap::default();
+
     if verifier.guess.len() == 5 {
+        let solution = verifier.solution.clone();
+
+        for (index, guess) in verifier.guess.iter_mut() {
+            let exact_match = solution.get(index).unwrap() == guess;
+            let not_in_correct_location = solution.values().any(|solution| solution == guess);
+
+            let position_color = if exact_match {
+                LetterGuessStatus::ExactMatch
+            } else if not_in_correct_location {
+                LetterGuessStatus::NotInCorrectLocation
+            } else {
+                LetterGuessStatus::NotInWord
+            };
+
+            progress.insert(*index, position_color);
+        }
+
         if verifier.solution == verifier.guess {
             info!("Solution is correct!");
         } else {
             info!("Solution is incorrect!");
         }
+
+        verifier.progress = progress;
     } else {
         info!("Guess is incomplete!");
     }
 
     info!("Solution: {:?}", verifier.solution);
     info!("Guess: {:?}", verifier.guess);
+    info!("Progress: {:?}", verifier.progress);
 }
+
+fn update_progress() {}
