@@ -1,15 +1,11 @@
-use std::char;
-
-use crate::plugins::constants::{MULTIPLIER, SCALE};
-
 use super::image_visualize::LetterMap;
+use crate::plugins::constants::{MULTIPLIER, SCALE};
 use bevy::{
     input::{
         keyboard::{Key, KeyboardInput},
         ButtonState,
     },
     prelude::*,
-    transform::commands,
 };
 
 pub struct GuessLetterPlugin;

@@ -1,23 +1,18 @@
 use super::{
     constants::{CURSOR_IMAGE_INDEX, CURSOR_Z_HEIGHT, MULTIPLIER, SCALE},
+    guess_letter::LetterGuess,
     manual_bindgen::Letter,
 };
-use bevy::{input::common_conditions::input_just_pressed, prelude::*};
+use bevy::prelude::*;
 
 pub struct CursorPlugin;
 impl Plugin for CursorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_cursor);
-        app.add_systems(Update, render_cursor);
+        app.add_systems(Startup, (spawn_cursor, render_cursor).chain());
         app.add_systems(
             Update,
-            update_cursor_right.run_if(input_just_pressed(KeyCode::ArrowRight)),
+            (track_player_last_letter_input, update_cursor_render).chain(),
         );
-        app.add_systems(
-            Update,
-            update_cursor_left.run_if(input_just_pressed(KeyCode::ArrowLeft)),
-        );
-        app.add_systems(PostUpdate, update_cursor_render);
     }
 }
 
@@ -68,19 +63,15 @@ fn render_cursor(query: Query<&Letter>, cursor: Res<PlayerCursor>, mut commands:
     }
 }
 
-fn update_cursor_right(mut cursor: ResMut<PlayerCursor>) {
-    if cursor.position < 4 {
-        cursor.position += 1;
+fn track_player_last_letter_input(
+    mut cursor: ResMut<PlayerCursor>,
+    player_guess_query: Query<&LetterGuess>,
+) {
+    let length = player_guess_query.get_single().unwrap().letter.len() as u8;
+    if length > 0 {
+        cursor.position = length - 1;
     } else {
         cursor.position = 0;
-    }
-}
-
-fn update_cursor_left(mut cursor: ResMut<PlayerCursor>) {
-    if cursor.position > 0 {
-        cursor.position -= 1;
-    } else {
-        cursor.position = 4;
     }
 }
 
