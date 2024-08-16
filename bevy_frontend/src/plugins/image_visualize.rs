@@ -1,6 +1,7 @@
 use super::{
     constants::{HIDDEN_INDEX, MULTIPLIER, SCALE},
     manual_bindgen::{Letter, LetterStatus, Status},
+    solution_verifier::{LetterGuessStatus, SolutionVerifier},
 };
 use bevy::{prelude::*, utils::HashMap};
 
@@ -13,6 +14,7 @@ impl Plugin for VisualizeImagePlugin {
             Update,
             (spawn_default_sprite, update_letter_visibility).chain(),
         );
+        app.add_systems(PostUpdate, (update_guess_progress).run_if(is_guess_ready));
     }
 }
 
@@ -114,6 +116,32 @@ fn spawn_default_sprite(
             solved: letter_index,
         },));
     }
+}
+
+fn update_guess_progress(
+    mut image_query: Query<(&mut TextureAtlas, &ParentEntity), With<KeyLayer>>,
+    letter_query: Query<(&Letter)>,
+    verifier_resourc: Res<SolutionVerifier>,
+) {
+    for (mut texture_atlas, parent_entity) in image_query.iter_mut() {
+        let position = letter_query.get(parent_entity.0).unwrap().position;
+        let color = verifier_resourc.progress.get(&position).unwrap();
+        match color {
+            LetterGuessStatus::ExactMatch => {
+                texture_atlas.index = 8;
+            }
+            LetterGuessStatus::NotInCorrectLocation => {
+                texture_atlas.index = 7;
+            }
+            LetterGuessStatus::NotInWord => {
+                texture_atlas.index = 6;
+            }
+        }
+    }
+}
+
+fn is_guess_ready(resource: Res<SolutionVerifier>) -> bool {
+    resource.is_ready_to_verify
 }
 
 fn update_letter_visibility(

@@ -14,19 +14,19 @@ impl Plugin for SolutionVerifierPlugin {
             PostUpdate,
             verify_solution.run_if(input_just_pressed(KeyCode::Enter)),
         );
-        app.add_systems(PostUpdate, update_progress.after(verify_solution));
     }
 }
 
 #[derive(Debug, Resource)]
-struct SolutionVerifier {
+pub struct SolutionVerifier {
     solution: HashMap<u8, char>,
     guess: HashMap<u8, char>,
-    progress: HashMap<u8, LetterGuessStatus>,
+    pub progress: HashMap<u8, LetterGuessStatus>,
+    pub is_ready_to_verify: bool,
 }
 
 #[derive(Debug)]
-enum LetterGuessStatus {
+pub enum LetterGuessStatus {
     NotInWord,
     NotInCorrectLocation,
     ExactMatch,
@@ -36,11 +36,13 @@ fn init_solution_verifier(mut commands: Commands) {
     let solution = HashMap::default();
     let guess = HashMap::default();
     let progress: HashMap<u8, LetterGuessStatus> = HashMap::default();
+    let is_ready_to_verify = false;
 
     let solution_verifier = SolutionVerifier {
         solution,
         guess,
         progress,
+        is_ready_to_verify,
     };
     commands.insert_resource(solution_verifier);
 }
@@ -71,7 +73,7 @@ fn save_completed_guess(
     verifier.guess = guess;
 }
 
-fn verify_solution(mut verifier: ResMut<SolutionVerifier>) {
+pub fn verify_solution(mut verifier: ResMut<SolutionVerifier>) {
     let mut progress: HashMap<u8, LetterGuessStatus> = HashMap::default();
 
     if verifier.guess.len() == 5 {
@@ -99,13 +101,13 @@ fn verify_solution(mut verifier: ResMut<SolutionVerifier>) {
         }
 
         verifier.progress = progress;
+        verifier.is_ready_to_verify = true;
     } else {
         info!("Guess is incomplete!");
+        verifier.is_ready_to_verify = false;
     }
 
     info!("Solution: {:?}", verifier.solution);
     info!("Guess: {:?}", verifier.guess);
     info!("Progress: {:?}", verifier.progress);
 }
-
-fn update_progress() {}
