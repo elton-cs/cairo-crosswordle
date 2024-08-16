@@ -12,7 +12,7 @@ impl Plugin for ToriiPlugin {
 }
 
 #[derive(Debug, Component)]
-struct TempDojoEntity {
+pub struct TempDojoEntity {
     letter: Letter,
     letter_status: LetterStatus,
 }
@@ -47,7 +47,7 @@ fn mock_word_entities(mut commands: Commands) {
     }
 }
 
-fn spawn_or_update(
+pub fn spawn_or_update(
     mut commands: Commands,
     mut query_dojo_entity: Query<(Entity, &mut TempDojoEntity)>,
     mut query_bevy_entity: Query<(&mut Letter, &mut LetterStatus)>,
