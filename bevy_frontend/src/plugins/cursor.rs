@@ -67,7 +67,7 @@ fn track_player_last_letter_input(
     mut cursor: ResMut<PlayerCursor>,
     player_guess_query: Query<&LetterGuess>,
 ) {
-    let length = player_guess_query.get_single().unwrap().letter.len() as u8;
+    let length = player_guess_query.get_single().unwrap().letters.len() as u8;
     if length > 0 {
         cursor.position = length - 1;
     } else {

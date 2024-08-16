@@ -19,7 +19,7 @@ impl Plugin for GuessLetterPlugin {
 
 #[derive(Debug, Component)]
 pub struct LetterGuess {
-    pub letter: Vec<String>,
+    pub letters: Vec<String>,
     pub spawned_images: Vec<Entity>,
 }
 
@@ -38,7 +38,7 @@ fn init_empty_letter_guess(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn(LetterGuess {
-        letter: vec![],
+        letters: vec![],
         spawned_images: vec![],
     });
 
@@ -70,8 +70,8 @@ fn input_letter_guess(
 
                 if (char_code >= a && char_code <= z) || (char_code >= A && char_code <= Z) {
                     println!("Typed: {}", c);
-                    if letter.letter.len() < 5 {
-                        letter.letter.push(c.to_lowercase().to_string());
+                    if letter.letters.len() < 5 {
+                        letter.letters.push(c.to_lowercase().to_string());
                     } else {
                         println!("Already typed 5 letters!");
                     }
@@ -80,8 +80,8 @@ fn input_letter_guess(
                 }
             }
             Key::Backspace => {
-                if !letter.letter.is_empty() {
-                    letter.letter.pop();
+                if !letter.letters.is_empty() {
+                    letter.letters.pop();
                 }
             }
             _ => {}
@@ -99,12 +99,12 @@ fn display_guess(
     let mut letter = letter_guess_query.get_single_mut().unwrap();
     // info!("Guess: {:?}", letter.letter);
 
-    let number_of_letters = letter.letter.len();
+    let number_of_letters = letter.letters.len();
 
     let num_renders = guess_query.iter().count();
 
     if num_renders < number_of_letters {
-        let letter_value = letter.letter[num_renders].clone();
+        let letter_value = letter.letters[num_renders].clone();
         let letter_sprite = SpriteBundle {
             transform: Transform::from_translation(Vec3::new(
                 ((num_renders) as f32) * MULTIPLIER,
