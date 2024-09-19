@@ -10,8 +10,12 @@ starknet = "0.11.0"
 starknet-crypto = "0.7.0"
 starknet-types-core = "~0.1.4"
 tokio = "1.39.2"
-torii-client = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
-torii-grpc = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
+
+torii-client = { git = "https://github.com/elton-cs/dojo.git", rev = "401dacfbc753fee14d9dda9b45724c4dafa1b543" }
+torii-grpc = { git = "https://github.com/elton-cs/dojo.git", rev = "401dacfbc753fee14d9dda9b45724c4dafa1b543" }
+
+# torii-client = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
+# torii-grpc = { git = "https://github.com/dojoengine/dojo.git", rev = "f1c521451eab22d240ae378f8b2a9c6ae981375f" }
 cainome = { git = "https://github.com/cartridge-gg/cainome", rev = "7b0c2b369063fc1a34152ec999028a7e9dd093a3" }
 
 
